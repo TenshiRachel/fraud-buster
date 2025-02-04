@@ -6,7 +6,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 
 def get_train_data(test_size, random_state):
-    file_path = os.path.abspath('../../data/Base.csv')
+    file_path = os.path.abspath('./data/Base.csv')
     df = pd.read_csv(file_path)
     df = df.drop(['device_fraud_count'], axis=1, errors='ignore')
 
