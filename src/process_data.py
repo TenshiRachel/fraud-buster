@@ -47,8 +47,12 @@ def get_train_data(test_size, random_state):
 
     scaler = StandardScaler()
     # Computes statistics and transforms the data
-    X_train = scaler.fit_transform(X_train)
+    X_train_scaled = scaler.fit_transform(X_train)
     # Transforms data with statistics from above
-    X_test = scaler.transform(X_test)
+    X_test_scaled = scaler.transform(X_test)
+
+    # Convert back to DataFrame to retain feature names
+    X_train = pd.DataFrame(X_train_scaled, columns=X_train.columns, index=X_train.index)
+    X_test = pd.DataFrame(X_test_scaled, columns=X_test.columns, index=X_test.index)
 
     return X_train, X_test, y_train, y_test

@@ -1,5 +1,5 @@
 from src.process_data import get_train_data
-from models.gradient_boost.model import adaboost_model
+from models.gradient_boost_adaboost.model import adaboost_model
 
 # Hyperparameters
 depth = 1
