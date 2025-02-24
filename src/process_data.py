@@ -33,7 +33,7 @@ def get_train_data(test_size, random_state, feature_engineering=False):
 
         # Detect bots
         df['short_session'] = (df['session_length_in_minutes'] < 2).astype(int)
-        df['unusual_session_length'] = (((df['session_length_in_minutes'] < 2) | (df['session_length_in_minutes'] < 60))
+        df['unusual_session_length'] = (((df['session_length_in_minutes'] < 2) | (df['session_length_in_minutes'] > 60))
                                         .astype(int))
 
     # Features (Contributing factors to fraud)

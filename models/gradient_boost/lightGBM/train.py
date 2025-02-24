@@ -1,5 +1,5 @@
 from src.process_data import get_train_data
-from models.gradient_boost_LightGBM.model import lightgbm_model
+from models.gradient_boost.lightGBM.model import lightgbm_model
 from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 
 # Hyperparameters
@@ -36,7 +36,7 @@ def train_lgbm():
     return y_test, y_pred, y_prob
 
 # from src.process_data import get_train_data
-# from models.gradient_boost_LightGBM.model import lightgbm_model
+# from models.lightGBM.model import lightgbm_model
 # from sklearn.metrics import accuracy_score, precision_score, recall_score, f1_score, roc_auc_score
 # from skopt import BayesSearchCV
 # import lightgbm as lgb

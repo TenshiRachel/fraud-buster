@@ -1,6 +1,6 @@
-from models.gradient_boost_adaboost.train import train_ada
-from models.gradient_boost_LightGBM.train import train_lgbm
-from src.eval import eval, print_metrics
+from models.gradient_boost.adaboost.train import train_ada
+from models.gradient_boost.lightGBM import train
+from src.eval import print_metrics
 
 
 def main():
