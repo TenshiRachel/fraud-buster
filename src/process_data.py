@@ -7,6 +7,7 @@ from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 
 def get_train_data(test_size, random_state, feature_engineering=False):
+    # file_path = os.path.abspath('./data/new.csv')
     file_path = os.path.abspath('./data/Base.csv')
     df = pd.read_csv(file_path)
     df.replace(-1, np.nan)
