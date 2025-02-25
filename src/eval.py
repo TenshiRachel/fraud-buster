@@ -48,7 +48,7 @@ def eval(y_test, y_pred, y_prob, FIXED_FPR=0.05):
 
 
 def print_metrics(baselines, balanced_baselines, balanced, balanced_balanced):
-    header_list = [" ", "ADABOOST", "RANDOM FOREST", "LOGISTIC REGRESSION"]
+    header_list = [" ", "ADABOOST", "LIGHTGBM", "RANDOM FOREST", "LOGISTIC REGRESSION"]
 
     baselines.insert(0, 'Baseline accuracy')
     balanced_baselines.insert(0, 'Balanced baseline accuracy')
