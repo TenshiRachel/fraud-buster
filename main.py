@@ -1,13 +1,9 @@
 from models.gradient_boost.adaboost.train import train_ada
-<<<<<<< HEAD
 from models.random_tree.decision_tree.train import train_decision_tree
 from models.random_tree.decision_tree.train import tune_decision_tree
-from models.gradient_boost.lightGBM import train
 from src.eval import print_metrics
-=======
 from models.gradient_boost.lightGBM.train import train_lgbm
 from src.eval import print_metrics, eval
->>>>>>> 9f296c753aa259b572ea5e369dd5c925824f5271
 
 
 def main():
