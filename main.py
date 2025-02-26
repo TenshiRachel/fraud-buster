@@ -1,4 +1,4 @@
-from models.gradient_boost.adaboost.train import train_ada
+# from models.gradient_boost.adaboost.train import train_ada
 # from models.gradient_boost.lightGBM import train
 from models.tree.random_forest.train import train_rf
 from src.eval import print_metrics
