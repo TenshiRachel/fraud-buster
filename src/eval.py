@@ -56,6 +56,7 @@ def print_metrics(baselines, balanced_baselines, balanced, balanced_balanced):
     balanced_balanced.insert(0, 'Balanced balanced accuracy')
 
     full = [header_list, balanced_balanced, balanced_baselines, balanced, baselines]
+    ####### Add in precision, roc_auc comparison between models
 
     df = pd.DataFrame(full)
 
