@@ -1,6 +1,6 @@
 from models.gradient_boost.adaboost.train import train_ada
-from models.gradient_boost.lightGBM import train
-from src.eval import print_metrics
+from models.gradient_boost.lightGBM.train import train_lgbm
+from src.eval import print_metrics, eval
 
 
 def main():
@@ -10,21 +10,33 @@ def main():
     balances_feat = []
 
     print("AdaBoost Model")
+    ## AdaBoost Model
+    # Feature Engineering = False
     accuracy, balanced = train_ada(feature_engineering=False)
     accuracies.append(accuracy)
     balances.append(balanced)
-
     print("Adaboost without feature engineering done")
 
+    # Feature Engineering = True
     accuracy, balanced = train_ada(feature_engineering=True)
     accuracies_feat.append(accuracy)
     balances_feat.append(balanced)
-
     print("Adaboost with feature engineering done")
 
-    # print("LightGBM Model Data")
-    # lgbm_y_test, lgbm_y_pred, lgbm_y_prob = train_lgbm()
-    # eval(y_test=lgbm_y_test, y_pred=lgbm_y_pred, y_prob=lgbm_y_prob)
+
+    print("LightGBM Model Data")
+    ## LightGBM Model
+    # Feature Engineering = False
+    accuracy, balanced = train_lgbm(feature_engineering=False)
+    accuracies.append(accuracy)
+    balances.append(balanced)
+    print("LightGBM without feature engineering done")
+
+    # Feature Engineering = True
+    accuracy, balanced = train_lgbm(feature_engineering=True)
+    accuracies_feat.append(accuracy)
+    balances_feat.append(balanced)
+    print("LightGBM with feature engineering done")
 
     print_metrics(accuracies, balances, accuracies_feat, balances_feat)
 
