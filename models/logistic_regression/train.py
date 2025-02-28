@@ -15,11 +15,6 @@ def train_logistic_regression(feature_engineering=True, n_iterations=400, batch_
     #Load processed dataset
     X_train, X_test, y_train, y_test = get_train_data(test_size=0.2, random_state=42, feature_engineering=feature_engineering)
 
-    #Scale dataset
-    sc = StandardScaler()
-    X_train = sc.fit_transform(X_train)
-    X_test = sc.transform(X_test)
-
     #Convert to PyTorch Tensors
     X_train = torch.from_numpy(X_train.astype(np.float32)).to(device)
     y_train = torch.from_numpy(y_train.to_numpy().astype(np.float32)).to(device)
