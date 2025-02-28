@@ -1,5 +1,5 @@
 from src.process_data import get_train_data
-from sklearn.ensemble import RandomForestClassifier
+from models.random_tree.random_forest.model import get_rf_classifier
 from sklearn.metrics import accuracy_score, classification_report, balanced_accuracy_score, roc_auc_score
 
 # improve fields balancing
@@ -12,7 +12,10 @@ from tqdm import tqdm
 import time  # Just for simulation purposes
 
 import warnings
-warnings.filterwarnings('ignore')
+warnings.filterwarnings('ignore')\
+
+# PARALLELISE TRAINING
+from joblib import parallel_backend
 
 # Use SMOTE + Tomek Links for better resampling
 smote_tomek = SMOTETomek(random_state=42)
@@ -56,37 +59,41 @@ def get_resample():
 def train_rf(n_estimators=100):
     X_train, X_test, y_train, y_test = get_train_data(test_size=0.2, random_state=42, feature_engineering=True)
     print("got train data")
-    print(f"this is y_train: {y_train} and y_test: {y_test}")
+    # print(f"this is y_train: {y_train} and y_test: {y_test}")
 
     # balance the attributes
     if os.path.exists("./src/X_train_resampled.csv") and os.path.exists("./src/y_train_resampled.csv"):
         print("Loading existing resampled data...")
         X_train_resampled, y_train_resampled = get_resample()
         print("dataset retrieved!")
-        print(f"this is x_resampled: {X_train_resampled} and y_resampled: {y_train_resampled}")
+        # print(f"this is x_resampled: {X_train_resampled} and y_resampled: {y_train_resampled}")
         
     else:
         X_train_resampled, y_train_resampled = resample_save(X_train, y_train)
 
-    
-    # specify fields
-    rf_classifier = RandomForestClassifier(
-        n_estimators=n_estimators,  # more trees for better stability
-        class_weight="balanced",  # adjust class weight impact (either balanced or balanced_subsample)
-        max_depth=25,  # prevent overfitting
-        min_samples_leaf=5,  # reduce variance
-        max_features="sqrt",  # use sqrt features per split
-        random_state=42
+    rf_classifier = get_rf_classifier(
+        n_estimators = n_estimators, 
+        class_weight = "balanced_subsample", 
+        max_depth = 20, 
+        min_samples_leaf = 5, # varience
+        max_features = "sqrt", 
+        random_state = 42
     )
 
     print("Starting training...")
-    for i in tqdm(range(1, n_estimators + 1), desc="Training Progress"):
-        rf_classifier.n_estimators = i  # incrementally increase trees
-        rf_classifier.fit(X_train_resampled, y_train_resampled)
+    # Train incrementally with a progress bar
+    with tqdm(total=n_estimators, desc="Training Progress") as pbar:
+        for i in range(1, n_estimators + 1):
+            rf_classifier.n_estimators = i  # Increment tree count
+            with parallel_backend('loky'):  # Parallel processing
+                rf_classifier.fit(X_train_resampled, y_train_resampled)
+            pbar.update(1)  # Update progress bar
   
     # Make predictions
     y_pred = rf_classifier.predict(X_test)
     y_pred_proba = rf_classifier.predict_proba(X_test)[:, 1]
+
+    # eval(y_test, y_pred, y_pred_proba)
 
     # Calculate metrics
     accuracy = accuracy_score(y_test, y_pred)
@@ -98,4 +105,4 @@ def train_rf(n_estimators=100):
     print(f"\nAccuracy: {accuracy:.2f}")
     print("\nClassification Report:\n", classification_rep)
     print(f"\nBalanced Accuracy: {balanced_accuracy:.4f}")
-    print(f"\nAUC-ROC Score: {auc_roc:.4f}")  # Important for class imbalance
+    print(f"AUC-ROC Score: {auc_roc:.4f}\n")  # Important for class imbalance
