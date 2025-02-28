@@ -1,7 +1,7 @@
 # from models.gradient_boost.adaboost.train import train_ada
 # from models.gradient_boost.lightGBM import train
 from models.tree.random_forest.train import train_rf
-from src.eval import print_metrics
+# from src.eval import print_metrics
 
 
 def main():
@@ -28,7 +28,7 @@ def main():
     # eval(y_test=lgbm_y_test, y_pred=lgbm_y_pred, y_prob=lgbm_y_prob)
 
     print("Random Forest Model")
-    train_rf()
+    train_rf(50)
     
     # print_metrics(accuracies, balances, accuracies_feat, balances_feat)
 
