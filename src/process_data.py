@@ -5,6 +5,9 @@ import numpy as np
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
+# Use SMOTE for better resampling
+from imblearn.combine import SMOTETomek
+smote_tomek = SMOTETomek(random_state=42)
 
 def get_train_data(test_size, random_state, feature_engineering=False):
     file_path = os.path.abspath('./data/Base.csv')
@@ -80,4 +83,43 @@ def get_train_data(test_size, random_state, feature_engineering=False):
     X_train = pd.DataFrame(X_train_scaled, columns=X_train.columns, index=X_train.index)
     X_test = pd.DataFrame(X_test_scaled, columns=X_test.columns, index=X_test.index)
 
+    # use SMOTE + Tomek to balance the attributes
+    # currently only available for feautre engineered columns
+    if feature_engineering :
+        if os.path.exists("./data/X_train_resampled.csv") and os.path.exists("./data/y_train_resampled.csv"):
+            X_train, y_train = get_resample()
+        else:
+            X_train, y_train = resample_save(X_train, y_train)
+
     return X_train, X_test, y_train, y_test
+
+
+def resample_save(X_train, y_train):
+    print("Applying SMOTE + Tomek...")
+    X_train_resampled, y_train_resampled = smote_tomek.fit_resample(X_train, y_train)
+    
+    # print(f"this is X_train_resampled: {X_train_resampled} and y_train_resampled: {y_train_resampled}")
+
+    # Convert to DataFrame
+    X_train_resampled_df = pd.DataFrame(X_train_resampled)
+    y_train_resampled_df = pd.DataFrame(y_train_resampled)
+    
+    print("Saving Resampled data into CSV...")
+    # Save to CSV
+    X_train_resampled_df.to_csv("./data/X_train_resampled.csv", index=False)
+    y_train_resampled_df.to_csv("./data/y_train_resampled.csv", index=False)
+
+    print("✅ Resampled data saved to CSV.")
+
+    return X_train_resampled, y_train_resampled
+
+
+def get_resample():
+    print("Retrieving resampled data...")
+    # Load back the data
+    X_train_resampled = pd.read_csv("./data/X_train_resampled.csv")
+    y_train_resampled = pd.read_csv("./data/y_train_resampled.csv")
+
+    print("✅ Resampled data loaded successfully.")
+
+    return X_train_resampled, y_train_resampled
