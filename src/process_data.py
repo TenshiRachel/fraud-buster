@@ -86,19 +86,27 @@ def get_train_data(test_size, random_state, feature_engineering=False):
     # use SMOTE + Tomek to balance the attributes
     # currently only available for feautre engineered columns
     if feature_engineering :
-        if os.path.exists("./data/X_train_resampled.csv") and os.path.exists("./data/y_train_resampled.csv"):
-            X_train, y_train = get_resample()
-        else:
-            X_train, y_train = resample_save(X_train, y_train)
+        X_resampled_string = "./data/X_train_resampled_featureeng.csv"
+        y_resampled_string = "./data/y_train_resampled_featureeng.csv"
+    else:
+        X_resampled_string = "./data/X_train_resampled_nonfeatureeng.csv"
+        y_resampled_string = "./data/y_train_resampled_nonfeatureeng.csv"
+
+        
+    if os.path.exists(X_resampled_string) and os.path.exists(y_resampled_string):
+        X_train, y_train = get_resample(feature_engineering)
+    else:
+        X_train, y_train = resample_save(X_train, y_train, feature_engineering)
 
     return X_train, X_test, y_train, y_test
 
 
-def resample_save(X_train, y_train):
-    print("Applying SMOTE + Tomek...")
+def resample_save(X_train, y_train, isFeatureEng):
+    if isFeatureEng: isRun = "featureeng" 
+    else: isRun = "nonfeatureeng"
+
+    print(f"Applying SMOTE + Tomek for {isRun}...")
     X_train_resampled, y_train_resampled = smote_tomek.fit_resample(X_train, y_train)
-    
-    # print(f"this is X_train_resampled: {X_train_resampled} and y_train_resampled: {y_train_resampled}")
 
     # Convert to DataFrame
     X_train_resampled_df = pd.DataFrame(X_train_resampled)
@@ -106,20 +114,27 @@ def resample_save(X_train, y_train):
     
     print("Saving Resampled data into CSV...")
     # Save to CSV
-    X_train_resampled_df.to_csv("./data/X_train_resampled.csv", index=False)
-    y_train_resampled_df.to_csv("./data/y_train_resampled.csv", index=False)
+    X_train_resampled_df.to_csv(f"./data/X_train_resampled_{isRun}.csv", index=False)
+    y_train_resampled_df.to_csv(f"./data/y_train_resampled_{isRun}.csv", index=False)
 
     print("✅ Resampled data saved to CSV.")
 
     return X_train_resampled, y_train_resampled
 
 
-def get_resample():
+def get_resample(isFeatureEng):
     print("Retrieving resampled data...")
-    # Load back the data
-    X_train_resampled = pd.read_csv("./data/X_train_resampled.csv")
-    y_train_resampled = pd.read_csv("./data/y_train_resampled.csv")
 
-    print("✅ Resampled data loaded successfully.")
+    # Load back the data
+    if isFeatureEng:
+        X_train_resampled = pd.read_csv("./data/X_train_resampled_featureeng.csv")
+        y_train_resampled = pd.read_csv("./data/y_train_resampled_featureeng.csv")
+
+        print("✅ Resampled data loaded successfully.")
+    else: 
+        X_train_resampled = pd.read_csv("./data/X_train_resampled_nonfeatureeng.csv")
+        y_train_resampled = pd.read_csv("./data/y_train_resampled_nonfeatureeng.csv")
+
+        print("✅ Resampled data loaded successfully.")
 
     return X_train_resampled, y_train_resampled
