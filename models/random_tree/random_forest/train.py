@@ -11,19 +11,11 @@ warnings.filterwarnings('ignore')
 # PARALLELISE TRAINING
 from joblib import parallel_backend
 
-
-def train_rf(n_estimators=100):
-    X_train, X_test, y_train, y_test = get_train_data(test_size=0.2, random_state=42, feature_engineering=True)
-    print("got train data")
-
-    rf_classifier = get_rf_classifier(
-        n_estimators = n_estimators, 
-        class_weight = "balanced_subsample", 
-        max_depth = 20, 
-        min_samples_leaf = 5, # varience
-        max_features = "sqrt", 
-        random_state = 42
-    )
+def train_rf(feature_eng):
+    X_train, X_test, y_train, y_test = get_train_data(test_size=0.2, random_state=42, feature_engineering=feature_eng)
+    
+    n_estimators = 500
+    rf_classifier = get_rf_classifier()
 
     print("Starting training...")
     # Train incrementally with a progress bar
@@ -38,8 +30,6 @@ def train_rf(n_estimators=100):
     y_pred = rf_classifier.predict(X_test)
     y_pred_proba = rf_classifier.predict_proba(X_test)[:, 1]
 
-    # eval(y_test, y_pred, y_pred_proba)
-
     # Calculate metrics
     accuracy = accuracy_score(y_test, y_pred)
     classification_rep = classification_report(y_test, y_pred)
@@ -51,3 +41,5 @@ def train_rf(n_estimators=100):
     print("\nClassification Report:\n", classification_rep)
     print(f"\nBalanced Accuracy: {balanced_accuracy:.4f}")
     print(f"AUC-ROC Score: {auc_roc:.4f}\n")  # Important for class imbalance
+
+    return accuracy, balanced_accuracy

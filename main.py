@@ -13,7 +13,7 @@ def main():
     accuracies_feat = []
     balances_feat = []
 
-    print("AdaBoost Model")
+    print(" >>> AdaBoost Model")
     ## AdaBoost Model
     # Feature Engineering = False
     accuracy, balanced = train_ada(feature_engineering=False)
@@ -28,7 +28,8 @@ def main():
     print("Adaboost with feature engineering done")
 
 
-    print("LightGBM Model Data")
+
+    print(" >>> LightGBM Model Data")
     ## LightGBM Model
     # Feature Engineering = False
     accuracy, balanced = train_lgbm(feature_engineering=False)
@@ -42,14 +43,30 @@ def main():
     balances_feat.append(balanced)
     print("LightGBM with feature engineering done")
 
-    print("Random Forest Model")
-    train_rf(200)
 
-    print("Decision Tree Model")
+
+    print(" >>> Random Forest Model")
+    # Feature Engineering = False
+    accuracy, balanced = train_rf(feature_engineering=False)
+    accuracies.append(accuracy)
+    balances.append(balanced)
+    print("Random Forest without feature engineering done")
+
+    # Feature Engineering = True
+    accuracy, balanced = train_rf(feature_engineering=True)
+    accuracies_feat.append(accuracy)
+    balances_feat.append(balanced)
+    print("Random Forest with feature engineering done")
+
+
+
+    print(" >>> Decision Tree Model")
     train_decision_tree()
     # tune_decision_tree()
 
-    print("Logistics Regression Model")
+
+
+    print(" >>> Logistics Regression Model")
     logistic_acc = train_logistic_regression(feature_engineering=True, n_iterations=400)
     print(f'Logistic Regression Accuracy: {100 * logistic_acc:.2f} %')
 
