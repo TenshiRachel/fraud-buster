@@ -64,11 +64,16 @@ def main():
     train_decision_tree()
     # tune_decision_tree()
 
+    print("Logistic Regression Results:")
+    accuracy, balanced_acc, roc_auc, classifi_rep = train_logistic_regression(feature_engineering=True, n_iterations=300, batch_size=512)
 
+    # print(f"Best Model: {best_model:.4f}")
+    print(f"Accuracy: {accuracy:.4f}")
+    print(f"Balanced Accuracy: {balanced_acc:.4f}")
+    print(f"AUC-ROC Score: {roc_auc:.4f}")
+    print("Classification Report:")
+    print(classifi_rep)
 
-    print(" >>> Logistics Regression Model")
-    logistic_acc = train_logistic_regression(feature_engineering=True, n_iterations=400)
-    print(f'Logistic Regression Accuracy: {100 * logistic_acc:.2f} %')
 
     print_metrics(accuracies, balances, accuracies_feat, balances_feat)
 
