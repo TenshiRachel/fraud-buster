@@ -10,7 +10,7 @@ from sklearn.metrics import accuracy_score, balanced_accuracy_score, classificat
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import ParameterGrid
 
-def train_logistic_regression(feature_engineering=True, n_iterations=300, batch_size=512):
+def train_logistic_regression(feature_engineering=True, n_iterations=50, batch_size=512):
 
     #Load processed dataset
     X_train, X_test, y_train, y_test = get_train_data(test_size=0.2, random_state=42, feature_engineering=feature_engineering)
