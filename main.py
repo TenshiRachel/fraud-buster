@@ -68,11 +68,16 @@ def main():
     accuracies_feat.append(accuracy)
     balances_feat.append(balanced)
     print("Decision Tree without feature engineering done")
-
-
-    print(" >>> Logistics Regression Model")
-    logistic_acc = train_logistic_regression(feature_engineering=True, n_iterations=400)
-    print(f'Logistic Regression Accuracy: {100 * logistic_acc:.2f} %')
+    print("Logistic Regression Results:")
+    n_iterations = 100
+    accuracy, balanced_acc, roc_auc, classifi_rep, roc_pr = train_logistic_regression(feature_engineering=False, n_iterations=n_iterations, batch_size=512)
+    print(f"Number of iterations: {n_iterations}")
+    print(f"Accuracy: {accuracy:.4f}")
+    print(f"Balanced Accuracy: {balanced_acc:.4f}")
+    print(f"AUC-ROC Score: {roc_auc:.4f}")
+    print(f"ROC-PR Score: {roc_pr:.4f}")
+    print("Classification Report:")
+    print(classifi_rep)
 
     print_metrics(accuracies, balances, accuracies_feat, balances_feat)
 
