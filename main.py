@@ -1,5 +1,6 @@
 from models.gradient_boost.adaboost.train import train_ada
 from models.random_tree.decision_tree.train import train_decision_tree
+from models.random_tree.decision_tree.train import tune_decision_tree
 from models.random_tree.random_forest.train import train_rf
 from src.eval import print_metrics
 from models.gradient_boost.lightGBM.train import train_lgbm
@@ -43,8 +44,6 @@ def main():
     balances_feat.append(balanced)
     print("LightGBM with feature engineering done")
 
-
-
     print(" >>> Random Forest Model")
     # Feature Engineering = False
     accuracy, balanced = train_rf(feature_engineering=False)
@@ -59,11 +58,16 @@ def main():
     print("Random Forest with feature engineering done")
 
 
-
     print(" >>> Decision Tree Model")
-    train_decision_tree()
-    # tune_decision_tree()
-
+    accuracy, balanced = train_decision_tree(feature_engineering=True)
+    accuracies_feat.append(accuracy)
+    balances_feat.append(balanced)
+    print("Decision Tree with feature engineering done")
+    
+    accuracy, balanced = train_decision_tree(feature_engineering=False)
+    accuracies_feat.append(accuracy)
+    balances_feat.append(balanced)
+    print("Decision Tree without feature engineering done")
 
 
     print(" >>> Logistics Regression Model")
