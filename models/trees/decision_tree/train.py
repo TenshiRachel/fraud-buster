@@ -1,7 +1,8 @@
 from sklearn.metrics import accuracy_score, classification_report, balanced_accuracy_score, roc_auc_score, precision_recall_curve, auc
 from sklearn.metrics import precision_recall_curve, average_precision_score
-from models.random_tree.decision_tree.model import decision_tree_model
+from models.trees.decision_tree.model import decision_tree_model
 from src.process_data import get_train_data
+from src.eval import print_metrics
 from sklearn.model_selection import GridSearchCV
 from sklearn.tree import DecisionTreeClassifier
 from imblearn.over_sampling import SMOTE
@@ -12,6 +13,12 @@ from imblearn.combine import SMOTEENN
 from tqdm import tqdm
 
 
+# Hyperparameters
+max_depth = 10
+max_features = 'sqrt'
+min_samples_leaf = 1
+
+
 def train_decision_tree(feature_engineering):
     # Split data into training and testing sets
     X_train, X_test, y_train, y_test = get_train_data(test_size=0.2, random_state=42, feature_engineering=feature_engineering)
@@ -19,7 +26,8 @@ def train_decision_tree(feature_engineering):
     print("Starting Decision Tree Model training process...")
 
     # Initialize and train the Decision Tree model
-    model = decision_tree_model(max_depth=10, max_features='sqrt', min_samples_leaf=1,random_state=42, class_weight='balanced')
+    model = decision_tree_model(max_depth=max_depth, max_features=max_features, min_samples_leaf=min_samples_leaf,
+                                random_state=42, class_weight='balanced')
     model.fit(X_train, y_train)
     
     # Make predictions
@@ -36,13 +44,7 @@ def train_decision_tree(feature_engineering):
     pr_auc = auc(recall, precision)
 
     # Print the results
-    print(f"\nAccuracy: {accuracy:.2f}")
-    print("\nClassification Report:\n", classification_rep)
-    print("\nBalanced Accuracy Report:\n", balanced_accuracy)
-    print(f"AUC-ROC Score: {auc_roc:.4f}\n") 
-    print(f"PR AUC: {pr_auc}")
-    
-    return accuracy, balanced_accuracy
+    print_metrics(accuracy, balanced_accuracy, auc_roc, pr_auc, classification_rep)
 
 
 def tune_decision_tree():

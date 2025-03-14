@@ -1,6 +1,8 @@
 from src.process_data import get_train_data
-from models.random_tree.random_forest.model import get_rf_classifier
-from sklearn.metrics import accuracy_score, classification_report, balanced_accuracy_score, roc_auc_score, precision_recall_curve, average_precision_score
+from src.eval import print_metrics
+from models.trees.random_forest.model import get_rf_classifier
+from sklearn.metrics import (accuracy_score, classification_report, balanced_accuracy_score, roc_auc_score,
+                             precision_recall_curve, average_precision_score, f1_score)
 
 # for progression bar visualisation
 from tqdm import tqdm
@@ -11,7 +13,15 @@ warnings.filterwarnings('ignore')
 # PARALLELISE TRAINING
 from joblib import parallel_backend
 
-def train_rf(n_estimators=300, max_depth=20, min_samples_leaf=15, max_features="sqrt", class_weight="balanced_subsample", feature_engineering=False):
+
+# Hyperparameters
+n_estimators = 200
+max_depth = 15
+min_samples_leaf = 15
+max_features = 'sqrt'
+
+
+def train_rf(class_weight="balanced_subsample", feature_engineering=False):
     """
     Trains a Random Forest classifier incrementally while displaying a progress bar.
     
@@ -34,8 +44,6 @@ def train_rf(n_estimators=300, max_depth=20, min_samples_leaf=15, max_features="
     # Initialize the Random Forest classifier with given hyperparameters
     rf_classifier = get_rf_classifier(
         n_estimators=n_estimators,
-        warm_start=True,  # Allows incremental learning
-        n_jobs=-1,  # Utilize all available CPU cores
         max_depth=max_depth,
         min_samples_leaf=min_samples_leaf,
         max_features=max_features,
@@ -66,10 +74,4 @@ def train_rf(n_estimators=300, max_depth=20, min_samples_leaf=15, max_features="
     pr_auc = average_precision_score(y_test, y_pred_proba)
     
     # Print results
-    print(f"\nAccuracy: {accuracy:.2f}")
-    print("\nClassification Report:\n", classification_rep)
-    print(f"\nBalanced Accuracy: {balanced_accuracy:.4f}")
-    print(f"AUC-ROC Score: {auc_roc:.4f}\n")  # Important for class imbalance
-    print(f"PR AUC Score: {pr_auc:.4f}\n")  # Important for class imbalance
-
-    return accuracy, balanced_accuracy
+    print_metrics(accuracy, balanced_accuracy, auc_roc, pr_auc, classification_rep)

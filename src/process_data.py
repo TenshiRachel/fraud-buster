@@ -1,13 +1,49 @@
 import pandas as pd
 import os
 import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
+from sklearn.decomposition import PCA
 
 # Use SMOTE for better resampling
 from imblearn.combine import SMOTETomek
 smote_tomek = SMOTETomek(random_state=42)
+
+
+def plot_fraud_distribution(X_before, y_before, X_after, y_after):
+    # Apply PCA for dimensionality reduction
+    pca = PCA(n_components=2)
+
+    # Transform the data
+    X_before_pca = pca.fit_transform(X_before)
+    X_after_pca = pca.fit_transform(X_after)
+
+    # Convert to DataFrame and add the target column
+    df_before = pd.DataFrame(X_before_pca, columns=['PC1', 'PC2'])
+    df_before['fraud_bool'] = y_before.values
+
+    df_after = pd.DataFrame(X_after_pca, columns=['PC1', 'PC2'])
+    df_after['fraud_bool'] = y_after.values
+
+    # Plotting
+    fig, axes = plt.subplots(1, 2, figsize=(16, 6))
+
+    # Before SMOTE
+    sns.scatterplot(data=df_before, x='PC1', y='PC2', hue='fraud_bool', palette='coolwarm', ax=axes[0], alpha=0.7)
+    axes[0].set_title("Before SMOTE")
+    axes[0].legend(title='Fraud')
+
+    # After SMOTE
+    sns.scatterplot(data=df_after, x='PC1', y='PC2', hue='fraud_bool', palette='coolwarm', ax=axes[1], alpha=0.7)
+    axes[1].set_title("After SMOTE")
+    axes[1].legend(title='Fraud')
+
+    plt.tight_layout()
+    plt.show()
+
 
 def get_train_data(test_size, random_state, feature_engineering=False):
     file_path = os.path.abspath('./data/Base.csv')
@@ -91,9 +127,11 @@ def get_train_data(test_size, random_state, feature_engineering=False):
     else:
         X_resampled_string = "./data/X_train_resampled_nonfeatureeng.csv"
         y_resampled_string = "./data/y_train_resampled_nonfeatureeng.csv"
-
         
     if os.path.exists(X_resampled_string) and os.path.exists(y_resampled_string):
+        # X_resampled, y_resampled = get_resample(feature_engineering)
+        # plot_fraud_distribution(X_train, y_train, X_resampled, y_resampled)
+
         X_train, y_train = get_resample(feature_engineering)
     else:
         X_train, y_train = resample_save(X_train, y_train, feature_engineering)

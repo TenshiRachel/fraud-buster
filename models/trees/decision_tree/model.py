@@ -1,5 +1,6 @@
 from sklearn.tree import DecisionTreeClassifier
 
+
 def decision_tree_model(max_depth, max_features, min_samples_leaf, random_state, class_weight):
     # Initialize and train the Decision Tree model
     

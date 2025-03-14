@@ -1,8 +1,10 @@
 from src.process_data import get_train_data
+from src.eval import print_metrics
 import torch
 from torch.utils.data import TensorDataset, DataLoader
 from sklearn.metrics import f1_score, classification_report, balanced_accuracy_score, roc_auc_score, average_precision_score
 from models.neural_network.model import create_model
+
 
 def train_nn(feature_engineering=False):
     # Load and preprocess data
@@ -73,15 +75,5 @@ def train_nn(feature_engineering=False):
     auc_roc = roc_auc_score(all_labels, all_probs)  # New metric to evaluate fraud detection
     roc_pr = average_precision_score(all_labels, all_probs)  # Added Precision-Recall AUC Score
 
-    # Display results
-    print(f'Test Accuracy: {accuracy * 100:.2f}%')
-    print(f'Test F1 Score: {f1:.4f}')
-    print(f'Test Balanced Accuracy: {balanced_acc:.4f}')
-    print(f'Test AUC-ROC: {auc_roc:.4f}')  # AUC-ROC score for fraud detection
-    print(f'Test ROC-PR Score: {roc_pr:.4f}')  # ✅ Print ROC-PR Score
-
-    # Classification report
-    print("\nClassification Report:")
-    print(classification_report(all_labels, all_predictions, digits=4))
-
-    return accuracy, balanced_acc
+    class_report = classification_report(all_labels, all_predictions, digits=4)
+    print_metrics(accuracy, balanced_acc, auc_roc, roc_pr, class_report)

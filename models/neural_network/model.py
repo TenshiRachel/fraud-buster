@@ -1,6 +1,7 @@
 import torch
 import torch.nn as nn
 
+
 class MLP(nn.Module):
     def __init__(self, input_size):
         super(MLP, self).__init__()
@@ -18,6 +19,7 @@ class MLP(nn.Module):
 
     def forward(self, x):
         return self.model(x)
+
 
 def create_model(input_size, class_weights, device):
     model = MLP(input_size).to(device)

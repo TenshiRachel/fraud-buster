@@ -6,10 +6,15 @@ import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, TensorDataset
 from tqdm import tqdm
 from src.process_data import get_train_data
+from src.eval import print_metrics
 from models.logistic_regression.model import LogisticRegression
-from sklearn.metrics import accuracy_score, balanced_accuracy_score, classification_report, precision_score, recall_score, f1_score, roc_auc_score, roc_curve, precision_recall_curve, auc, average_precision_score
-from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import (accuracy_score, balanced_accuracy_score, classification_report,
+                             roc_auc_score, roc_curve, precision_recall_curve, auc, average_precision_score)
 from sklearn.model_selection import ParameterGrid
+
+# Hyperparameters
+n_iterations = 100
+
 
 def plot_roc_pr(y_test, y_prob):
     """ Function to plot ROC and Precision-Recall curves."""
@@ -42,31 +47,30 @@ def plot_roc_pr(y_test, y_prob):
     plt.show()
 
 
+def train_logistic_regression(feature_engineering=False, batch_size=512):
 
-def train_logistic_regression(feature_engineering=False, n_iterations=100, batch_size=512):
-
-    #Load processed dataset
+    # Load processed dataset
     X_train, X_test, y_train, y_test = get_train_data(test_size=0.2, random_state=42, feature_engineering=feature_engineering)
 
-    #Convert to PyTorch Tensors
+    # Convert to PyTorch Tensors
     X_train = torch.from_numpy(X_train.values.astype(np.float32))
     y_train = torch.from_numpy(y_train.values.astype(np.float32))
     X_test = torch.from_numpy(X_test.values.astype(np.float32))
     y_test = torch.from_numpy(y_test.values.astype(np.float32))
 
-    #Reshape target tensors for BCELoss compatibility
+    # Reshape target tensors for BCELoss compatibility
     y_train = y_train.view(-1, 1)
     y_test = y_test.view(-1, 1)
 
-    #Create DataLoader for batch training
+    # Create DataLoader for batch training
     batch_size = 512
     train_dataset = TensorDataset(X_train, y_train)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
 
-    #Initialize the model
-    model = LogisticRegression(input_feat = X_train.shape[1])
+    # Initialize the model
+    model = LogisticRegression(input_feat=X_train.shape[1])
 
-    #Define loss function
+    # Define loss function
     loss = nn.BCELoss()
     optimiser = torch.optim.SGD(params = model.parameters(), lr=0.01)
 
@@ -74,39 +78,39 @@ def train_logistic_regression(feature_engineering=False, n_iterations=100, batch
         epoch_loss = 0.0
         for batch_X, batch_y in train_loader:
 
-            #forward pass
+            # forward pass
             y_preds = model(batch_X)
             L = loss(y_preds, batch_y)
 
-            #Backprop
+            # Backprop
             L.backward()
 
-            #Update parameters
+            # Update parameters
             optimiser.step()
 
-            #Zero gradients
+            # Zero gradients
             optimiser.zero_grad()
             
             epoch_loss += L.item()
 
-        #Print loss at intervals 
+        # Print loss at intervals
         if epoch % 100 == 0 or epoch == n_iterations - 1:
             print(f'Epoch {epoch}, Loss {epoch_loss:.3f}')
 
     print("\n")
 
-    #Evaluate model
+    # Evaluate model
     with torch.no_grad():
-        #Predict probabilities
+        # Predict probabilities
         y_prob = model(X_test)
         y_pred = (y_prob >= 0.5).float()
 
-        #Convert to NumPy
+        # Convert to NumPy
         y_test_np = y_test.cpu().numpy()
         y_pred_np = y_pred.cpu().numpy()
         y_prob_np = y_prob.cpu().numpy()    
 
-        #Calculate metrics
+        # Calculate metrics
         accuracy = accuracy_score(y_test_np, y_pred_np)
         balanced_acc = balanced_accuracy_score(y_test_np, y_pred_np)
         classif_rep = classification_report(y_test, y_pred)
@@ -115,19 +119,12 @@ def train_logistic_regression(feature_engineering=False, n_iterations=100, batch
 
         plot_roc_pr(y_test_np, y_prob_np)
 
-        #Print results  
-        # print("\nTraining Completed\n")
-        # print(f'Accuracy: {accuracy:.2f} %')
-        #print("Classification Report:")
-        #print(classification_report(y_test_np, y_pred_np))
-        # print(f"Balanced Accuracy: {balanced_acc:.3f}")
-        # print(f"ROC-AUC Score: {roc_auc:.3f}")
+        # Print results
+        print_metrics(accuracy, balanced_acc, roc_auc, roc_pr, classif_rep)
 
-    return accuracy, balanced_acc, roc_auc, classif_rep, roc_pr
 
-#Tune Hyperparameters (Using GridSearchCV)
+# Tune Hyperparameters (Using GridSearchCV)
 def tune_logistic_regression():
-    #Define hyperparameter grid
     param_grid = {
         'lr': [0.001, 0.01, 0.1],
         'batch_size': [128, 512, 1024],
@@ -141,13 +138,11 @@ def tune_logistic_regression():
     best_accuracy = 0
     best_balanced_acc = 0
 
-    #Iterate through all combinations 
+    # Iterate through all combinations
     for params in ParameterGrid(param_grid):
         # Train model with given hyperparameters
-        accuracy, balanced_acc, roc_auc, _ = train_logistic_regression(
-            n_iterations=params["n_iterations"],
-            batch_size=params["batch_size"]
-        )
+        accuracy, balanced_acc, roc_auc, _ = train_logistic_regression(n_iterations=params["n_iterations"],
+                                                                       batch_size=params["batch_size"])
 
     # Track best model
         if accuracy > best_accuracy:

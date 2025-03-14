@@ -2,9 +2,10 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 
 from src.process_data import get_train_data
+from src.eval import print_metrics
 from models.gradient_boost.adaboost.model import adaboost_model
 from sklearn.metrics import (accuracy_score, balanced_accuracy_score, precision_score, classification_report,
-                             roc_auc_score, recall_score, f1_score)
+                             roc_auc_score, recall_score, f1_score, average_precision_score)
 from sklearn.model_selection import GridSearchCV
 
 # Hyperparameters
@@ -32,34 +33,11 @@ def train_ada(feature_engineering=False):
 
     accuracy = accuracy_score(y_test, y_pred)
     balanced_accuracy = balanced_accuracy_score(y_test, y_pred)
-
-    print("=" * 50)
-    print(f"Accuracy: {accuracy}")
-
-    print("=" * 50)
-    print(f"Balanced Accuracy: {balanced_accuracy}")
-
-    print("=" * 50)
-    precision = precision_score(y_test, y_pred, average='weighted', zero_division=0)
-    print(f"Precision: {precision}")
-
-    print("=" * 50)
-    recall = recall_score(y_test, y_pred, average='weighted', zero_division=0)
-    print(f"Recall: {recall}")
-
-    print("=" * 50)
-    f1 = f1_score(y_test, y_pred, average='weighted', zero_division=0)
-    print(f"F1 Score: {f1}")
-
-    print("=" * 50)
     roc = roc_auc_score(y_test, y_prob)
-    print(f"AUC-ROC: {roc}")
+    roc_pr = average_precision_score(y_test, y_prob)
+    class_report = classification_report(y_test, y_pred, zero_division=0)
 
-    print("=" * 50)
-    print('Classification report')
-    print(classification_report(y_test, y_pred, zero_division=0))
-
-    return accuracy, balanced_accuracy
+    print_metrics(accuracy, balanced_accuracy, roc, roc_pr, class_report)
 
 
 def find_best_hyperparameters():

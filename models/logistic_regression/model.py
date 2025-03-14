@@ -2,6 +2,7 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 
+
 class LogisticRegression(nn.Module):
     def __init__(self, input_feat):
         super(LogisticRegression, self).__init__()

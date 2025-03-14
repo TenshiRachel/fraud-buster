@@ -1,4 +1,5 @@
 from src.process_data import get_train_data
+from src.eval import print_metrics
 from models.gradient_boost.lightGBM.model import lightgbm_model
 from sklearn.metrics import accuracy_score, balanced_accuracy_score, precision_score, recall_score, f1_score, roc_auc_score, classification_report, average_precision_score
 from sklearn.model_selection import GridSearchCV
@@ -11,6 +12,7 @@ max_depth = 7
 num_leaves = 100
 num_estimators = 500
 learning_rate = 0.1
+
 
 def train_lgbm(feature_engineering):
     X_train, X_test, y_train, y_test = get_train_data(test_size=0.2, random_state=42, feature_engineering=feature_engineering) 
@@ -29,19 +31,12 @@ def train_lgbm(feature_engineering):
     balanced_accuracy = balanced_accuracy_score(y_test, y_pred)
 
     # Evaluation Metrics
-    accuracy = accuracy_score(y_test, y_pred)
-    precision = precision_score(y_test, y_pred)
-    recall = recall_score(y_test, y_pred)
-    f1 = f1_score(y_test, y_pred)
     roc_auc = roc_auc_score(y_test, y_prob)
     roc_pr = average_precision_score(y_test, y_prob)
+    class_report = classification_report(y_test, y_pred)
 
     # Print metrics
-    print(f"AUC-ROC: {roc_auc:.4f}")
-    print(f"ROC-PR AUC: {roc_pr:.4f}")
-    print(classification_report(y_test, y_pred))
-
-    return accuracy, balanced_accuracy
+    print_metrics(accuracy, balanced_accuracy, roc_auc, roc_pr, class_report)
 
 
 # Hyperparameter tuning
