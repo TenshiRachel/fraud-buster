@@ -81,7 +81,7 @@ def main():
 
 
     print(" >>> Neural Network Model")
-    ## AdaBoost Model
+    ## Neural Network  Model
     # Feature Engineering = False
     accuracy, balanced = train_nn(feature_engineering=False)
     accuracies.append(accuracy)
