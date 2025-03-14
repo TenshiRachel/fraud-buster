@@ -28,7 +28,6 @@ def main():
     print("Adaboost with feature engineering done")
 
 
-
     print(" >>> LightGBM Model Data")
     ## LightGBM Model
     # Feature Engineering = False
@@ -47,13 +46,13 @@ def main():
 
     print(" >>> Random Forest Model")
     # Feature Engineering = False
-    accuracy, balanced = train_rf(feature_engineering=False)
+    accuracy, balanced = train_rf(n_estimators=200, max_depth=15, min_samples_leaf=15, max_features="sqrt", class_weight="balanced", feature_engineering=False)
     accuracies.append(accuracy)
     balances.append(balanced)
     print("Random Forest without feature engineering done")
 
     # Feature Engineering = True
-    accuracy, balanced = train_rf(feature_engineering=True)
+    accuracy, balanced = train_rf(n_estimators=200, max_depth=15, min_samples_leaf=15, max_features="sqrt", class_weight="balanced", feature_engineering=True)
     accuracies_feat.append(accuracy)
     balances_feat.append(balanced)
     print("Random Forest with feature engineering done")
@@ -63,7 +62,6 @@ def main():
     print(" >>> Decision Tree Model")
     train_decision_tree()
     # tune_decision_tree()
-
 
 
     print(" >>> Logistics Regression Model")
