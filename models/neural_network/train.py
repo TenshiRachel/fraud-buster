@@ -1,3 +1,5 @@
+# run this file to train neural_network and get performance metrics 
+
 from src.process_data import get_train_data
 import torch
 from torch.utils.data import TensorDataset, DataLoader
@@ -11,11 +13,9 @@ X_train, X_test, y_train, y_test = get_train_data(test_size=0.2, random_state=42
 # Convert to tensors
 X_train_tensor = torch.FloatTensor(X_train.to_numpy())
 X_test_tensor = torch.FloatTensor(X_test.to_numpy())
-# y_train_tensor = torch.LongTensor(y_train.to_numpy())
-# y_test_tensor = torch.LongTensor(y_test.to_numpy())
+
 y_train_tensor = torch.LongTensor(y_train.to_numpy().reshape(-1))  
 y_test_tensor = torch.LongTensor(y_test.to_numpy().reshape(-1))  
-
 
 # Create TensorDatasets
 train_dataset = TensorDataset(X_train_tensor, y_train_tensor)
@@ -36,7 +36,7 @@ class MLP(nn.Module):
         self.model = nn.Sequential(
             nn.Linear(input_size, 64),
             nn.BatchNorm1d(64),  # Added BatchNorm
-            nn.LeakyReLU(0.1),  # 🔹 Changed to LeakyReLU
+            nn.LeakyReLU(0.1),  # Changed to LeakyReLU
             nn.Dropout(0.35),  # Added Dropout to prevent overfitting
             nn.Linear(64, 32),
             nn.BatchNorm1d(32),  
@@ -98,7 +98,7 @@ accuracy = sum([p == l for p, l in zip(all_predictions, all_labels)]) / len(all_
 f1 = f1_score(all_labels, all_predictions, average='weighted')
 balanced_acc = balanced_accuracy_score(all_labels, all_predictions)
 auc_roc = roc_auc_score(all_labels, all_probs)  # New metric to evaluate fraud detection
-roc_pr = average_precision_score(all_labels, all_probs)  # ✅ Added Precision-Recall AUC Score
+roc_pr = average_precision_score(all_labels, all_probs)  # Added Precision-Recall AUC Score
 
 # Display results
 print(f'Test Accuracy: {accuracy * 100:.2f}%')
