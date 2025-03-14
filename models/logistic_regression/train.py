@@ -2,15 +2,48 @@ import torch
 import torch.nn as nn
 import torch.optim as optim
 import numpy as np
+import matplotlib.pyplot as plt
 from torch.utils.data import DataLoader, TensorDataset
 from tqdm import tqdm
 from src.process_data import get_train_data
 from models.logistic_regression.model import LogisticRegression
-from sklearn.metrics import accuracy_score, balanced_accuracy_score, classification_report, precision_score, recall_score, f1_score, roc_auc_score
+from sklearn.metrics import accuracy_score, balanced_accuracy_score, classification_report, precision_score, recall_score, f1_score, roc_auc_score, roc_curve, precision_recall_curve, auc, average_precision_score
 from sklearn.preprocessing import StandardScaler
 from sklearn.model_selection import ParameterGrid
 
-def train_logistic_regression(feature_engineering=True, n_iterations=50, batch_size=512):
+def plot_roc_pr(y_test, y_prob):
+    """ Function to plot ROC and Precision-Recall curves."""
+
+    precision, recall, _ = precision_recall_curve(y_test, y_prob)
+    roc_pr = auc(recall, precision)
+
+    fpr, tpr, _ = roc_curve(y_test, y_prob)
+    roc_auc = auc(fpr, tpr)
+
+    plt.figure(figsize=(12, 5))
+
+    """ PR Curve """
+    plt.subplot(1, 2, 1)
+    plt.plot(recall, precision, marker='.', label=f'PR AUC: {roc_pr:.4f}')
+    plt.xlabel('Recall')
+    plt.ylabel('Precision')
+    plt.title('Precision-Recall Curve')
+    plt.legend()
+
+    """ ROC Curve """
+    plt.subplot(1, 2, 2)
+    plt.plot(fpr, tpr, marker='.', label=f'ROC AUC: {roc_auc:.4f}')
+    plt.plot([0, 1], [0, 1], linestyle='--', color='gray')
+    plt.xlabel('False Positive Rate')
+    plt.ylabel('True Positive Rate')
+    plt.title('ROC Curve')
+    plt.legend()
+    
+    plt.show()
+
+
+
+def train_logistic_regression(feature_engineering=False, n_iterations=100, batch_size=512):
 
     #Load processed dataset
     X_train, X_test, y_train, y_test = get_train_data(test_size=0.2, random_state=42, feature_engineering=feature_engineering)
@@ -78,6 +111,9 @@ def train_logistic_regression(feature_engineering=True, n_iterations=50, batch_s
         balanced_acc = balanced_accuracy_score(y_test_np, y_pred_np)
         classif_rep = classification_report(y_test, y_pred)
         roc_auc = roc_auc_score(y_test_np, y_prob_np)
+        roc_pr = average_precision_score(y_test_np, y_prob_np)
+
+        plot_roc_pr(y_test_np, y_prob_np)
 
         #Print results  
         # print("\nTraining Completed\n")
@@ -87,7 +123,7 @@ def train_logistic_regression(feature_engineering=True, n_iterations=50, batch_s
         # print(f"Balanced Accuracy: {balanced_acc:.3f}")
         # print(f"ROC-AUC Score: {roc_auc:.3f}")
 
-    return accuracy, balanced_acc, roc_auc, classif_rep
+    return accuracy, balanced_acc, roc_auc, classif_rep, roc_pr
 
 #Tune Hyperparameters (Using GridSearchCV)
 def tune_logistic_regression():
