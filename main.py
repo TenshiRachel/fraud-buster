@@ -5,6 +5,7 @@ from models.random_tree.random_forest.train import train_rf
 from src.eval import print_metrics
 from models.gradient_boost.lightGBM.train import train_lgbm
 from models.logistic_regression.train import train_logistic_regression
+from models.neural_network.train import train_nn
 from src.eval import print_metrics, eval
 
 
@@ -78,6 +79,21 @@ def main():
     print(f"ROC-PR Score: {roc_pr:.4f}")
     print("Classification Report:")
     print(classifi_rep)
+
+
+    print(" >>> Neural Network Model")
+    ## AdaBoost Model
+    # Feature Engineering = False
+    accuracy, balanced = train_nn(feature_engineering=False)
+    accuracies.append(accuracy)
+    balances.append(balanced)
+    print("Neural Network without feature engineering done")
+
+    # Feature Engineering = True
+    accuracy, balanced = train_nn(feature_engineering=True)
+    accuracies_feat.append(accuracy)
+    balances_feat.append(balanced)
+    print("Neural Network with feature engineering done")
 
     print_metrics(accuracies, balances, accuracies_feat, balances_feat)
 
