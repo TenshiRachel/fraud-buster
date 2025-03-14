@@ -71,3 +71,5 @@ def train_rf(n_estimators=300, max_depth=20, min_samples_leaf=15, max_features="
     print(f"\nBalanced Accuracy: {balanced_accuracy:.4f}")
     print(f"AUC-ROC Score: {auc_roc:.4f}\n")  # Important for class imbalance
     print(f"PR AUC Score: {pr_auc:.4f}\n")  # Important for class imbalance
+
+    return accuracy, balanced_accuracy
