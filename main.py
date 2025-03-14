@@ -3,9 +3,9 @@ from models.random_tree.decision_tree.train import train_decision_tree
 from models.random_tree.decision_tree.train import tune_decision_tree
 from models.random_tree.random_forest.train import train_rf
 from src.eval import print_metrics
-from models.gradient_boost.lightGBM.train import train_lgbm
+from models.gradient_boost.lightGBM.train import train_lgbm , find_best_hyperparameters
 from models.logistic_regression.train import train_logistic_regression
-from src.eval import print_metrics, eval
+from src.eval import print_metrics
 
 
 def main():
@@ -31,7 +31,6 @@ def main():
 
 
     print(" >>> LightGBM Model Data")
-    ## LightGBM Model
     # Feature Engineering = False
     accuracy, balanced = train_lgbm(feature_engineering=False)
     accuracies.append(accuracy)
