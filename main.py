@@ -5,7 +5,8 @@ from models.random_tree.random_forest.train import train_rf
 from src.eval import print_metrics
 from models.gradient_boost.lightGBM.train import train_lgbm , find_best_hyperparameters
 from models.logistic_regression.train import train_logistic_regression
-from src.eval import print_metrics
+from models.neural_network.train import train_nn
+from src.eval import print_metrics, eval
 
 
 def main():
@@ -29,7 +30,6 @@ def main():
     print("Adaboost with feature engineering done")
 
 
-
     print(" >>> LightGBM Model Data")
     # Feature Engineering = False
     accuracy, balanced = train_lgbm(feature_engineering=False)
@@ -45,13 +45,13 @@ def main():
 
     print(" >>> Random Forest Model")
     # Feature Engineering = False
-    accuracy, balanced = train_rf(feature_engineering=False)
+    accuracy, balanced = train_rf(n_estimators=200, max_depth=15, min_samples_leaf=15, max_features="sqrt", class_weight="balanced", feature_engineering=False)
     accuracies.append(accuracy)
     balances.append(balanced)
     print("Random Forest without feature engineering done")
 
     # Feature Engineering = True
-    accuracy, balanced = train_rf(feature_engineering=True)
+    accuracy, balanced = train_rf(n_estimators=200, max_depth=15, min_samples_leaf=15, max_features="sqrt", class_weight="balanced", feature_engineering=True)
     accuracies_feat.append(accuracy)
     balances_feat.append(balanced)
     print("Random Forest with feature engineering done")
@@ -77,6 +77,21 @@ def main():
     print(f"ROC-PR Score: {roc_pr:.4f}")
     print("Classification Report:")
     print(classifi_rep)
+
+
+    print(" >>> Neural Network Model")
+    ## AdaBoost Model
+    # Feature Engineering = False
+    accuracy, balanced = train_nn(feature_engineering=False)
+    accuracies.append(accuracy)
+    balances.append(balanced)
+    print("Neural Network without feature engineering done")
+
+    # Feature Engineering = True
+    accuracy, balanced = train_nn(feature_engineering=True)
+    accuracies_feat.append(accuracy)
+    balances_feat.append(balanced)
+    print("Neural Network with feature engineering done")
 
     print_metrics(accuracies, balances, accuracies_feat, balances_feat)
 
