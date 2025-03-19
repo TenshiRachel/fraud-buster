@@ -15,10 +15,12 @@ predict fraudulent bank transactions.
 ### Datasets Used
 [Bank Account Fraud Dataset Suite (NeurIPS 2022)](https://www.kaggle.com/datasets/sgpjesus/bank-account-fraud-dataset-neurips-2022)
 
-*Please download and keep ONLY Base.csv in a folder called 'data' 
-in the project root directory*
+*The project will automatically download the datasets, however, in case of errors, please download them from 
+[this link](https://drive.google.com/drive/folders/1K13cuCLWsq7D1j3WqZEHLPPEEXVOXyjG?usp=sharing) 
+and place them in a folder called 'data' in the project's root directory*
 
 Example:
+
 ![data example](https://github.com/TenshiRachel/fraud-buster/blob/master/img/data_example.png)
 
 ### Project Setup
